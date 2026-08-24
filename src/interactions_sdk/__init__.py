@@ -19,7 +19,7 @@ from __future__ import annotations
 
 import os
 
-from ._protocol import InteractionError, _send_output, _send_prompt
+from ._protocol import InteractionError, _send_output, _send_prompt, set_streams
 
 __all__ = [
     "AbortError",
@@ -32,6 +32,7 @@ __all__ = [
     "confirm",
     "is_interactive",
     "output",
+    "set_streams",
     "start_output_capture",
     "stop_output_capture",
 ]
@@ -75,8 +76,9 @@ def stop_output_capture() -> str:
 # ---------------------------------------------------------------------------
 
 def is_interactive() -> bool:
-    """Check if this script is running under the interactive scheduler."""
-    return os.getenv(ENV_MARKER) == "1"
+    """Check if running in interactive mode (scheduler or custom streams)."""
+    from ._protocol import has_custom_streams
+    return has_custom_streams() or os.getenv(ENV_MARKER) == "1"
 
 
 def output(text: str) -> None:
